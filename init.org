@@ -5,7 +5,7 @@ My setup of Emacs
 ** Table of contents                                                  :TOC_4:
 - [[#emacs-configuration][.emacs configuration]]
   - [[#basic-setup][Basic setup]]
-  - [[#keep-package-update][Keep package up-to-date]]
+  - [[#keep-packages-up-to-date][Keep packages up-to-date]]
   - [[#behaviorial-settings][Behaviorial settings]]
     - [[#general][general]]
     - [[#path-variable-from-shell][PATH variable from shell]]
@@ -13,6 +13,7 @@ My setup of Emacs
     - [[#helm][helm]]
     - [[#navigating-windows-better][Navigating windows better]]
     - [[#pdf-reading][PDF reading]]
+    - [[#fonts][fonts]]
     - [[#dashboard][dashboard]]
     - [[#themes-and-ui][themes and ui]]
     - [[#documentation-viewers][Documentation viewers]]
@@ -30,7 +31,6 @@ My setup of Emacs
     - [[#sidebar-tree-navigation][Sidebar tree navigation]]
     - [[#better-terminals][Better terminals]]
     - [[#writing-booksorg-mode-etc][Writing (books/org-mode etc.)]]
-
 
 ** Basic setup
 
@@ -126,7 +126,7 @@ My setup of Emacs
 
   ;; Save emacs backups in a different directory
   ;; (some build-systems build automatically all files with prefix, and .#something.someending breakes that)
-  (setq backup-directory-alist '(("." . "~/emacsbackups")))
+  (setq backup-directory-alist '(("." . "~/.emacsbackups")))
 
   ;; Don't create lockfiles. Many build systems that continously monitor the file system get confused by then (e.g. Quarkus). This sometimes causes the build systems not to work anymore before restarting
   (setq create-lockfiles nil)
@@ -267,6 +267,24 @@ For years I held off on pdf-tools, and I have to say I regret it! I imagined PDF
     (pdf-view-restore-filename (concat user-emacs-directory ".pdf-view-restore"))
     :config
     (add-hook 'pdf-view-mode-hook 'pdf-view-restore-mode))
+#+END_SRC
+
+
+*** fonts
+#+BEGIN_SRC emacs-lisp
+  ;; Main font (Nerd Fonts)
+  (set-face-attribute 'default nil
+                      :font "JetBrainsMonoNL Nerd Font Mono"
+                      :height 100)
+
+  ;; Symbols fallback (ICONS)
+  (set-fontset-font t 'unicode
+                    (font-spec :family "JetBrainsMonoNL Nerd Font Mono")
+                    nil 'append)
+
+  (set-fontset-font t 'symbol
+                    (font-spec :family "JetBrainsMonoNL Nerd Font Mono")
+                    nil 'append)
 #+END_SRC
 
 
@@ -714,7 +732,9 @@ C does not really need much auto completion, but it can be great to have it for 
     (c-basic-offset 4)
     :hook
     ((c-mode . lsp)
-     (c-mode . yas-minor-mode)))
+     (c++-mode . lsp)
+     (c-mode . yas-minor-mode)
+     (c++-mode . yas-minor-mode)))
 #+END_SRC
 
 
@@ -794,7 +814,7 @@ While term.el and shell are good enough for some use cases, they do not work wel
                     ;; Settings to mimic dracula I use for zsh.
                     (setq-local buffer-face-mode-face '(:background "#000000" :foreground "#FFFFFF"))
                     (buffer-face-mode 1)
-                    (text-scale-adjust 2))))
+                    (text-scale-adjust -1))))
 
   (use-package multi-vterm
     :after vterm
