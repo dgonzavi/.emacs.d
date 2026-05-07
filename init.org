@@ -27,6 +27,12 @@ My setup of Emacs
     - [[#ide-functionality---general][IDE functionality - general]]
     - [[#programming--scripting--markup-languages-and-so-on][Programming-, scripting-, markup-languages and so on]]
       - [[#c][C]]
+      - [[#java][Java]]
+      - [[#kotlin][Kotlin]]
+      - [[#dockerfiles][Dockerfiles]]
+      - [[#markdown][Markdown]]
+      - [[#yaml][YAML]]
+      - [[#xml][XML]]
     - [[#git-and-project-handling][git and project handling]]
     - [[#sidebar-tree-navigation][Sidebar tree navigation]]
     - [[#better-terminals][Better terminals]]
@@ -109,6 +115,9 @@ My setup of Emacs
   ;; Disable C-z sleep/suspend key
   (global-unset-key (kbd "C-z"))
 
+  ;; disable the C-x C-b key, because I use helm (C-x b) instead
+  (global-unset-key (kbd "C-x C-b"))
+
   (setq display-time-default-load-average nil)
   (setq display-time-day-and-date t display-time-24hr-format t)
   (display-time-mode t)
@@ -135,6 +144,9 @@ My setup of Emacs
   ;; Enable show-paren-mode (to visualize parenthesis) and make it possible to delete things we have marked
   (show-paren-mode 1)
   (delete-selection-mode 1)
+
+  ;; don't show the emacs splash screen as I use a custom dashboard instead
+  (setq inhibit-startup-screen t)
 
   ;; Use y or n instead of yes or no
   (defalias 'yes-or-no-p 'y-or-n-p)
@@ -211,6 +223,7 @@ I use helm because i prefer it to ido or alternatives. It is simple to use, has 
 
 #+BEGIN_SRC emacs-lisp
   (use-package helm
+    :demand t
     :after (projectile)
     :config
     (helm-mode 1)
@@ -275,7 +288,7 @@ For years I held off on pdf-tools, and I have to say I regret it! I imagined PDF
   ;; Main font (Nerd Fonts)
   (set-face-attribute 'default nil
                       :font "JetBrainsMonoNL Nerd Font Mono"
-                      :height 100)
+                      :height 130)
 
   ;; Symbols fallback (ICONS)
   (set-fontset-font t 'unicode
@@ -331,12 +344,14 @@ Emacs is always open at my machine, so I really enjoy a friendly startup screen 
 To make Emacs better looking, I use the leuven-theme. This theme improves org-mode readability and makes Emacs blue and pretty in general :) I used to use doom-themes, moe-themes and so on with a simple theme switcher function, but I mostly just use leuven so I decided to remove them. The modeline is made prettier and more modern with doom modeline to get a beautiful powerline :) 
 
 #+BEGIN_SRC emacs-lisp
-  (use-package leuven-theme)
+  (use-package solarized-theme)
 
   ;; just to make sure dash, f and s are present.
   (use-package dash)
   (use-package s)
   (use-package f)
+
+  (load-theme 'solarized-wombat-dark t)
 
   (use-package doom-modeline
     :init
@@ -713,6 +728,15 @@ I also find it useful to be able to see cognitive complexity metrics while codin
 #+END_SRC
 
 
+Apheleia automatically formats source code buffers using external formatters whenever you save or edit files.
+#+BEGIN_SRC emacs-lisp
+  (use-package apheleia
+    :ensure t
+    :config
+    (apheleia-global-mode +1))
+#+END_SRC
+
+
 *** Programming-, scripting-, markup-languages and so on
 Some languages work great out of the box, some require a little tweaking. 
 
@@ -730,11 +754,10 @@ C does not really need much auto completion, but it can be great to have it for 
     (c-basic-offset 4)
     :hook
     ((c-mode . lsp)
-     (c++-mode . lsp)
      (c-mode . yas-minor-mode)
+     (c++-mode . lsp)
      (c++-mode . yas-minor-mode)))
 #+END_SRC
-
 
 Some projects also use CMake as a build system in the C and C++ world. Handy to have CMake syntax highlighting available:
 #+BEGIN_SRC emacs-lisp
@@ -742,6 +765,102 @@ Some projects also use CMake as a build system in the C and C++ world. Handy to 
     :defer t)
 #+END_SRC
 (just activate lsp using M-x in a CMake buffer after this to get completion etc.! Requires installation of [[https://emacs-lsp.github.io/lsp-mode/page/lsp-cmake/][cmake-language-server]])
+
+
+**** Java
+Java IDE-like functionality in Emacs. When we run this mode for the first time, the lsp server will be downloaded automatically. Works like a charm!
+
+#+BEGIN_SRC emacs-lisp
+  (use-package lsp-java
+    :hook
+    (java-mode . lsp)
+
+    :bind
+    (:map java-mode-map
+          ("M-RET" . lsp-java-organize-imports)))
+
+
+  ;; Java snippets for yasnippet. Found them very useful so far
+  (use-package java-snippets
+    :after yasnippet
+    :hook
+    (java-mode . yas-minor-mode))
+
+  ;; JDTLS path
+  (setq lsp-java-server-install-dir "~/bin/jdtls")
+#+END_SRC
+
+
+**** Kotlin
+lsp-mode works out of the box with Kotlin mode as long as [[https://github.com/fwcd/kotlin-language-server][kotlin-language-server]] is in the path :) So I only install Kotlin-mode :)
+
+#+BEGIN_SRC emacs-lisp
+  (defun themkat/kotlin-register-debug-templates ()
+    ;; various debug templates for Kotlin will be put here
+    (dap-register-debug-template "Kotlin tests with launcher"
+                               (list :type "kotlin"
+                                     :request "launch"
+                                     :mainClass "org.junit.platform.console.ConsoleLauncher --scan-class-path"
+                                     :enableJsonLogging nil
+                                     :noDebug nil)))
+
+  (use-package kotlin-mode
+    :defer t
+    :after (lsp-mode dap-mode yasnippet)
+    :config
+    (require 'dap-kotlin)
+    ;; should probably have been in dap-kotlin instead of lsp-kotlin
+    (setq lsp-kotlin-debug-adapter-path (or (executable-find "kotlin-debug-adapter") ""))
+    (themkat/kotlin-register-debug-templates)
+    :hook ((kotlin-mode . lsp)
+           (kotlin-mode . yas-minor-mode)))
+#+END_SRC
+
+I have written briefly on my blog about Kotlin in Emacs. [[https://themkat.net/2021/11/03/kotlin_in_emacs.html][Article 1]] and [[https://themkat.net/2022/09/24/kotlin_in_emacs_redux.html][Article 2]]. They contain some minor tips and tricks, as well as other links that might prove useful.
+
+I use apheleia with ktlint to format after saved
+#+BEGIN_SRC emacs-lisp
+  (with-eval-after-load 'apheleia
+    (setf (alist-get 'ktlint apheleia-formatters)
+          '("ktlint"
+            "--stdin"
+            "{buffer-file-name}"
+            "--format"
+            ))
+
+    (setf (alist-get 'kotlin-mode apheleia-mode-alist)
+          'ktlint))
+
+  (global-set-key (kbd "C-c f")
+                #'apheleia-format-buffer)
+#+END_SRC
+
+
+**** Dockerfiles
+#+BEGIN_SRC emacs-lisp
+  (use-package dockerfile-mode
+    :mode "Dockerfile\\'")
+#+END_SRC
+
+
+**** Markdown
+#+BEGIN_SRC emacs-lisp
+  (use-package markdown-mode)
+#+END_SRC
+
+
+**** YAML
+#+BEGIN_SRC emacs-lisp
+  (use-package yaml-mode
+    :defer t)
+#+END_SRC
+
+
+**** XML
+#+BEGIN_SRC emacs-lisp
+  (setq nxml-child-indent 4)
+  (setq nxml-attribute-indent 4)
+#+END_SRC
 
 
 *** git and project handling
