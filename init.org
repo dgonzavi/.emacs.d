@@ -823,10 +823,10 @@ I use apheleia with ktlint to format after saved
   (with-eval-after-load 'apheleia
     (setf (alist-get 'ktlint apheleia-formatters)
           '("ktlint"
-            "--stdin"
-            "{buffer-file-name}"
             "--format"
-            ))
+            "-l"
+            "error"
+            "--stdin"))
 
     (setf (alist-get 'kotlin-mode apheleia-mode-alist)
           'ktlint))
