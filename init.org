@@ -481,6 +481,11 @@ Line numbers
    '(line-number-current-line ((t (:inherit line-number :background "white" :foreground "black")))))
 #+END_SRC
 
+Column numbers
+#+BEGIN_SRC emacs-lisp
+  (column-number-mode 1)
+#+END_SRC
+
 Rainbow mode
 #+BEGIN_SRC emacs-lisp
   (use-package rainbow-mode
