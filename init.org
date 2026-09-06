@@ -63,20 +63,12 @@ My setup of Emacs
   (setq-default indent-tabs-mode nil)
   (setq-default tab-with 4)
 
-
   ;; Don't autosave
   (setq auto-save-default nil)
 
   ;; Recentf file list need to contain WAAAY more history. Useful for Helm-mini
   (setq recentf-max-saved-items 100)
 
-  ;; GUI related settings
-  (if (display-graphic-p)
-      (progn
-        ;; remove annoying ui elements
-        (menu-bar-mode -1)
-        (tool-bar-mode -1)
-        (scroll-bar-mode -1)))
   ;; Disable C-z sleep/suspend key
   (global-unset-key (kbd "C-z"))
 
@@ -87,11 +79,7 @@ My setup of Emacs
   ;; Make copy and paste use the same clipboard as emacs
   (setq select-enable-primary t)
   (setq select-enable-clipboard t)
-
-  ;; Ensure I can use paste from Mac OS X clipboard ALWAYS (or close)
-  (when (memq window-system '(mac ns))
-    (setq interprogram-paste-function (lambda () (shell-command-to-string "pbpaste"))))
-
+  
   ;; Set monday to be the first day of the week in calendar
   (setq calendar-week-start-day 1)
 
@@ -102,7 +90,6 @@ My setup of Emacs
   ;; Don't create lockfiles. Many build systems that continously monitor the file system get confused by then (e.g. Quarkus). This sometimes causes the build systems not to work anymore before restarting
   (setq create-lockfiles nil)
 
-
   ;; Enable show-paren-mode (to visualize parenthesis) and make it possible to delete things we have marked
   (show-paren-mode 1)
   (delete-selection-mode 1)
@@ -112,7 +99,6 @@ My setup of Emacs
 
   ;; Avoid GUI dialog boxes
   (setq use-dialog-box nil)
-
 
   ;; Instead of making annoying beeps, blink the modeline on various errors
   (setq ring-bell-function (lambda ()
@@ -136,16 +122,4 @@ My setup of Emacs
   ;; Start Emacs server so I don't have to do it manually anymore
   ;; (usefull for emacsclients -n filenames from othe processes)
   (server-start)
-#+END_SRC
-
-
-This only applies to Mac, but makes my life easier. The different brackets became almost impossible to use without this :P Controlling which key is the actual meta key
-#+BEGIN_SRC emacs-lisp
-  (setq mac-command-modifier 'meta)
-  (setq mac-option-modifier nil)
-#+END_SRC
-
-It is nice to open images in Emacs. Make ImageMagick or similar convert images that are not supported natively for me:
-#+BEGIN_SRC emacs-lisp
-  (setq image-use-external-converter t)
 #+END_SRC
