@@ -61,7 +61,7 @@ My setup of Emacs
   ;; Switched from tabs to spaces for indentation
   ;; also set the indentation level to 4
   (setq-default indent-tabs-mode nil)
-  (setq-default tab-with 4)
+  (setq-default tab-width 4)
 
   ;; Don't autosave
   (setq auto-save-default nil)
@@ -85,7 +85,7 @@ My setup of Emacs
 
   ;; Save emacs backups in a different directory
   ;; (some build-systems build automatically all files with prefix, and .#something.someending breakes that)
-  (setq backup-directory-alist '(("." . "~/emacsbackups")))
+  (setq backup-directory-alist '(("." . "~/.emacsbackups")))
 
   ;; Don't create lockfiles. Many build systems that continously monitor the file system get confused by then (e.g. Quarkus). This sometimes causes the build systems not to work anymore before restarting
   (setq create-lockfiles nil)
