@@ -79,7 +79,7 @@ My setup of Emacs
   ;; Make copy and paste use the same clipboard as emacs
   (setq select-enable-primary t)
   (setq select-enable-clipboard t)
-  
+
   ;; Set monday to be the first day of the week in calendar
   (setq calendar-week-start-day 1)
 
@@ -122,4 +122,28 @@ My setup of Emacs
   ;; Start Emacs server so I don't have to do it manually anymore
   ;; (usefull for emacsclients -n filenames from othe processes)
   (server-start)
+
+  (menu-bar-mode -1)
+  (tool-bar-mode -1)
+#+END_SRC
+
+** Editing settings
+
+*** Programming
+
+**** C
+
+#+BEGIN_SRC emacs-lisp
+  (use-package cc-mode
+    :ensure nil
+    :custom
+    (c-basic-offset 4))
+
+  (defun hcoati/compile-current-file ()
+    (interactive)
+    (compile
+     (format "make SRC=%s"
+             (file-name-nondirectory buffer-file-name))))
+
+  (global-set-key (kbd "C-c c")#'hcoati/compile-current-file)
 #+END_SRC
