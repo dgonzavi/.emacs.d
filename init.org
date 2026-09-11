@@ -124,7 +124,7 @@ My setup of Emacs
   (server-start)
 
   (menu-bar-mode -1)
-  (tool-bar-mode -1)
+
 #+END_SRC
 
 ** Editing settings
